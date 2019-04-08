@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Contains ImportingTestCase.
@@ -9,17 +8,6 @@
  * Tests importing a single value to a content type with a Paragraphs field.
  */
 class FeedsParaMapperSingleValueTestCase extends FeedsParaMapperWebTestCase {
-
-  /**
-   * Lets SimpleTest knows about this test class.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Single Value Importing Test',
-      'description' => 'Insures that importing a single value to a Paragraphs field works correctly',
-      'group' => 'Paragraphs Mapper',
-    );
-  }
 
   /**
    * Test importing nodes with paragraphs field value.
@@ -84,17 +72,6 @@ class FeedsParaMapperSingleValueTestCase extends FeedsParaMapperWebTestCase {
  * Tests importing to a content type with a nested Paragraphs field.
  */
 class FeedsParaMapperNestedImportTestCase extends FeedsParaMapperWebTestCase {
-
-  /**
-   * Lets SimpleTest knows about this test class.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Nested Importing Test',
-      'description' => 'Insures that importing to a nested Paragraphs field works correctly',
-      'group' => 'Paragraphs Mapper',
-    );
-  }
 
   /**
    * Prepares the test environment.
@@ -164,17 +141,6 @@ class FeedsParaMapperNestedImportTestCase extends FeedsParaMapperWebTestCase {
 class FeedsParaMapperMultiValuedImportingTestCase extends FeedsParaMapperWebTestCase {
 
   /**
-   * Lets SimpleTest knows about this test class.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Multi-valued Importing Test',
-      'description' => 'Insures that importing to a multi-valued Paragraphs field works correctly',
-      'group' => 'Paragraphs Mapper',
-    );
-  }
-
-  /**
    * Prepares the test environment.
    */
   public function setUp() {
@@ -228,17 +194,6 @@ class FeedsParaMapperMultiValuedImportingTestCase extends FeedsParaMapperWebTest
 class FeedsParaMapperUpdatingTestCase extends FeedsParaMapperWebTestCase {
 
   /**
-   * Lets SimpleTest knows about this test class.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Updating Test',
-      'description' => 'Insures that updating the values of Paragraphs fields works correctly',
-      'group' => 'Paragraphs Mapper',
-    );
-  }
-
-  /**
    * Prepares the test environment.
    */
   public function setUp() {
@@ -287,3 +242,4 @@ class FeedsParaMapperUpdatingTestCase extends FeedsParaMapperWebTestCase {
   }
 
 }
+

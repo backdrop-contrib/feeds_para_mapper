@@ -1,48 +1,8 @@
 <?php
-
- /**
-  * @file
-  * Allows feeds to import content to Paragraphs' fields.
-  */
-
 /**
- * Implements hook_help().
+ * @file
+ * Allows Feeds to import content to Paragraphs' fields.
  */
-function feeds_para_mapper_help($path, $arg) {
-  switch ($path) {
-    case 'admin/help#feeds_para_mapper':
-
-      $filepath = dirname(__FILE__) . '/README.md';
-      if (file_exists($filepath)) {
-        $readme = file_get_contents($filepath);
-      }
-      else {
-        $filepath = dirname(__FILE__) . '/README.txt';
-        if (file_exists($filepath)) {
-          $readme = file_get_contents($filepath);
-        }
-      }
-      if (!isset($readme)) {
-        return NULL;
-      }
-      if (module_exists('markdown')) {
-        $filters = module_invoke('markdown', 'filter_info');
-        $info = $filters['filter_markdown'];
-
-        if (function_exists($info['process callback'])) {
-          $output = $info['process callback']($readme, NULL);
-        }
-        else {
-          $output = '<pre>' . $readme . '</pre>';
-        }
-      }
-      else {
-        $output = '<pre>' . $readme . '</pre>';
-      }
-
-      return $output;
-  }
-}
 
 /**
  * Implements hook_feeds_processor_targets().
@@ -69,7 +29,7 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
     $para_field_info = array(
       'name' => $para_field['label'],
       'machine_name' => $para_field['field_name'],
-      'field_id' => $para_field['field_id'],
+      //'field_id' => $para_field['field_id'],
       'bundle' => $bundle,
       'entity_type' => $entity_type,
     );
@@ -130,7 +90,6 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
         }
       }
     }
-
   }
   return $targets;
 }
@@ -352,7 +311,6 @@ function feeds_para_mapper_form_callback(array $mapping, array $target, array $f
       '#width' => '5%',
     ),
   );
-
 }
 
 /**
@@ -494,7 +452,7 @@ function feeds_para_mapper_set_target(\FeedsSource $source, $entity, $target, ar
   // Check if the field module support Feeds.
   if (!function_exists($mapping['module_callback'])) {
     $message = t('Field @field does not support Feeds', ['@field' => $mapping['field']]);
-    drupal_set_message($message, 'error');
+    backdrop_set_message($message, 'error');
     return;
   }
   // Create empty paragraphs or get the currently attached to the entity.
@@ -572,7 +530,7 @@ function feeds_para_mapper_init_mapping($entity, array $mapping) {
   $type = $entity->feeds_item->entity_type;
   $bundle = $entity->type;
   // Get list of the target fields.
-  $cache = &drupal_static(__FUNCTION__);
+  $cache = &backdrop_static(__FUNCTION__);
   if (!isset($cache['targets'])) {
     // If the list is not cached, add it to cache.
     $cache['targets'] = feeds_para_mapper_feeds_processor_targets($type, $bundle, TRUE);
@@ -1074,8 +1032,8 @@ function feeds_para_mapper_create_paragraph($bundle, $field, $host_entity, $host
     }
     catch (Exception $exception) {
       $m = t("Could't set host entity");
-      drupal_set_message($m, 'error');
-      drupal_set_message(t('%err', ['%err' => $exception]), 'error');
+      backdrop_set_message($m, 'error');
+      backdrop_set_message(t('%err', ['%err' => $exception]), 'error');
     }
   }
   return $created;
@@ -1360,8 +1318,8 @@ function feeds_para_mapper_feeds_presave(FeedsSource $source, $entity, $item, $e
     }
     catch (Exception $exception) {
       $message = t('Failed to update the paragraph.');
-      drupal_set_message($message, 'error');
-      drupal_set_message($exception, 'error');
+      backdrop_set_message($message, 'error');
+      backdrop_set_message($exception, 'error');
     }
     return NULL;
   };
@@ -1377,3 +1335,4 @@ function feeds_para_mapper_feeds_presave(FeedsSource $source, $entity, $item, $e
   }
   return TRUE;
 }
+

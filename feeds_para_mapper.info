@@ -1,13 +1,8 @@
 name = Paragraphs Mapper
-description = Allows feeds to import content to paragraph fields.
+description = Allows Feeds to import content to Paragraphs' fields.
+backdrop = 1.x
+type = module
+dependencies[] = feeds
+dependencies[] = paragraphs
 package = Feeds
-core = 7.x
-dependencies[] = feeds (7.x-2.0-beta4)
-dependencies[] = paragraphs (7.x-1.0-rc5)
 
-;tests
-test_dependencies[] = feeds:7.x-2.0-beta4
-test_dependencies[] = paragraphs:7.x-1.0-rc5
-files[] = tests/FeedsParaMapperWebTestCase.test
-files[] = tests/mapping.test
-files[] = tests/importing.test
