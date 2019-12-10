@@ -39,7 +39,7 @@ https://github.com/backdrop-contrib/feeds_para_mapper/issues.
 Current Maintainers
 -------------------
 
-- Peter Anderson (https://github.com/BWPanda).
+Looking for maintainer(s).
 
 Credits
 -------
