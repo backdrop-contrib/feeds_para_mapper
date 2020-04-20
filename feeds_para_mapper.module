@@ -427,10 +427,10 @@ function feeds_para_mapper_call_targets_form_hook(array $field) {
   $hook = "feeds_processor_targets";
   $alter_hook = "feeds_processor_targets_alter";
   $targets = array();
-  $args = [
+  $args = array(
     'paragraphs_item',
     $field['paragraph_bundle'],
-  ];
+  );
   $field = feeds_para_mapper_get_correct_module_name($field);
   if (module_hook($field['module'], $hook)) {
     $targets = module_invoke($field['module'], $hook, $args[0], $args[1]);
@@ -493,7 +493,7 @@ function feeds_para_mapper_set_target(\FeedsSource $source, $entity, $target, ar
   $mapping = feeds_para_mapper_init_mapping($entity, $mapping);
   // Check if the field module support Feeds.
   if (!function_exists($mapping['module_callback'])) {
-    $message = t('Field @field does not support Feeds', ['@field' => $mapping['field']]);
+    $message = t('Field @field does not support Feeds', array('@field' => $mapping['field']));
     drupal_set_message($message, 'error');
     return;
   }
@@ -543,13 +543,13 @@ function feeds_para_mapper_set_value(\FeedsSource $source, $entity, \ParagraphsI
     $lang = $mapping['language'];
     $paragraph->{$field}[$lang] = array();
   }
-  $args = [
+  $args = array(
     $source,
     $paragraph,
     $correct_field,
     $value,
     $mapping,
-  ];
+  );
   $function = $mapping['module_callback'];
   call_user_func($function, $args[0], $args[1], $args[2], $args[3], $args[4]);
   if (!$entity->feeds_item->is_new) {
@@ -1028,7 +1028,7 @@ function feeds_para_mapper_create_parents(array $mapping, $entity) {
       return $item['host_field'] === $mapping['ctype_field'];
     });
     if (count($filtered)) {
-      $parents = [];
+      $parents = array();
       $parents[] = $filtered[0];
     }
   }
@@ -1064,10 +1064,10 @@ function feeds_para_mapper_create_parents(array $mapping, $entity) {
  */
 function feeds_para_mapper_create_paragraph($bundle, $field, $host_entity, $host_type = "paragraphs_item") {
   // todo: Test appending to db data:
-  $created = entity_create('paragraphs_item', [
+  $created = entity_create('paragraphs_item', array(
     'bundle' => $bundle,
     'field_name' => $field,
-  ]);
+  ));
   if ($created instanceof ParagraphsItemEntity) {
     try {
       $created->setHostEntity($host_type, $host_entity);
@@ -1075,7 +1075,7 @@ function feeds_para_mapper_create_paragraph($bundle, $field, $host_entity, $host
     catch (Exception $exception) {
       $m = t("Could't set host entity");
       drupal_set_message($m, 'error');
-      drupal_set_message(t('%err', ['%err' => $exception]), 'error');
+      drupal_set_message(t('%err', array('%err' => $exception)), 'error');
     }
   }
   return $created;
@@ -1152,8 +1152,9 @@ function feeds_para_mapper_duplicate_existing(array $mapping, $entity, \Paragrap
  */
 function feeds_para_mapper_remove_existing_parents($entity, array $mapping, array $parents, $ignore_bundle = FALSE) {
   $lang = $mapping['language'];
-  $findByField = function ($entity, $field, $bundle, $path = []) use ($lang, &$findByField, $ignore_bundle) {
-    $p_c = ParagraphsItemEntity::class;
+  $findByField = function ($entity, $field, $bundle, $path = array()) use ($lang, &$findByField, $ignore_bundle) {
+    $p_c = new ParagraphsItemEntity();
+    $p_c = get_class($p_c);
     $found = NULL;
     if (get_class($entity) === $p_c) {
       if ($entity->field_name === $field) {
@@ -1185,8 +1186,8 @@ function feeds_para_mapper_remove_existing_parents($entity, array $mapping, arra
     }
     return $found;
   };
-  $removed = [];
-  $to_remove = [];
+  $removed = array();
+  $to_remove = array();
   for ($i = 0; $i < count($parents); $i++) {
     $par = $findByField($entity, $parents[$i]['host_field'], $parents[$i]['bundle']);
     if ($par) {
@@ -1200,10 +1201,10 @@ function feeds_para_mapper_remove_existing_parents($entity, array $mapping, arra
   usort($parents, function ($a, $b) {
     return ($a['order'] < $b['order']) ? -1 : 1;
   });
-  return [
+  return array(
     'parents' => $parents,
     'removed' => $removed,
-  ];
+  );
 }
 
 /**
@@ -1231,7 +1232,9 @@ function feeds_para_mapper_get_target_paragraph($entity, array $mapping, $emptyO
 //    $lastPath = end($mapping['path']);
 //    $host_field = $lastPath['host_field'];
 //  }
-  $isParagraph = get_class($entity) === ParagraphsItemEntity::class;
+  $pi = new ParagraphsItemEntity();
+  $pi = get_class($pi);
+  $isParagraph = get_class($entity) === $pi;
   // Check if nested:
   if (isset($mapping['host_field'])) {
     // If the bundle is the same as the target paragraph bundle:
@@ -1269,7 +1272,7 @@ function feeds_para_mapper_get_target_paragraph($entity, array $mapping, $emptyO
       }
     }
   }
-  elseif (get_class($entity) === ParagraphsItemEntity::class) {
+  elseif ($isParagraph) {
     $result[] = $entity;
   }
   return $result;
@@ -1346,7 +1349,9 @@ function feeds_para_mapper_feeds_presave(FeedsSource $source, $entity, $item, $e
     $item->default_revision = TRUE;
     try {
       $parent = $item->hostEntity();
-      if (isset($parent) && get_class($parent) === ParagraphsItemEntity::class) {
+      $pi = new ParagraphsItemEntity();
+      $pi = get_class($pi);
+      if (isset($parent) && get_class($parent) === $pi) {
         $item->save();
       }
       else {
