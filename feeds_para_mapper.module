@@ -490,6 +490,11 @@ function feeds_para_mapper_get_correct_module_name(array $field) {
  *   Information about the target field and the target paragraph.
  */
 function feeds_para_mapper_set_target(\FeedsSource $source, $entity, $target, array $values, array $mapping) {
+  // check whether there are values:
+  $empty = feeds_para_mapper_is_empty($values);
+  if($empty){
+    return;
+  }
   $mapping = feeds_para_mapper_init_mapping($entity, $mapping);
   // Check if the field module support Feeds.
   if (!function_exists($mapping['module_callback'])) {
@@ -508,6 +513,25 @@ function feeds_para_mapper_set_target(\FeedsSource $source, $entity, $target, ar
     $paragraph = $paragraph[0];
     feeds_para_mapper_set_value($source, $entity, $paragraph, $mapping, $item['value']);
   }
+}
+
+/**
+ * Checks whether the values are empty.
+ *
+ * @param array $values
+ *   The values
+ *
+ * @return bool
+ *   True if the values are empty.
+ */
+function feeds_para_mapper_is_empty($values){
+  $emptyValues = 0;
+  foreach ($values as $value) {
+    if(!strlen($value)){
+      $emptyValues++;
+    }
+  }
+  return $emptyValues === count($values);
 }
 
 /**
