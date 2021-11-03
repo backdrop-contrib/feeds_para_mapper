@@ -116,7 +116,13 @@ function feeds_para_mapper_get_target_fields(array $target, $with_path = FALSE, 
   $target_bundles = array_filter($target_info['settings']['allowed_bundles'], function ($item) {
     return $item !== -1;
   });
-  $target_bundles = array_values($target_bundles);
+  if (empty($target_bundles)) {
+    // If no bundles are selected, all are allowed.
+    $target_bundles = array_keys($target_info['settings']['allowed_bundles']);
+  }
+  else {
+    $target_bundles = array_values($target_bundles);
+  }
   foreach ($target_bundles as $target_bundle) {
     $sub_fields = field_info_instances('paragraphs_item', $target_bundle);
     foreach ($sub_fields as $machine_name => $sub_field) {
