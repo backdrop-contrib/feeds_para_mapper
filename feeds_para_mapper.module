@@ -4,6 +4,31 @@
  * Allows Feeds to import content to Paragraphs' fields.
  */
 
+function feeds_para_mapper_autoload_info() {
+  return array(
+    'FeedsParagraphProcessor' => 'includes/FeedsParagraphProcessor.inc'
+  );
+}
+
+/**
+ * Implements hook_feeds_plugins().
+ */
+function feeds_para_mapper_feeds_plugins() {
+  $info['FeedsParagraphProcessor'] = array(
+    'name' => 'Paragraph Processor',
+    'module' => 'feeds_para_mapper',
+    'description' => 'Process paragraphs.',
+    'help' => 'More verbose description here. Will be displayed on processor selection menu.',
+    'handler' => array(
+      'parent' => 'FeedsProcessor',
+      'class' => 'FeedsParagraphProcessor',
+      'file' => 'FeedsParagraphProcessor.inc',
+      'path' => backdrop_get_path('module', 'feeds_para_mapper'),
+    ),
+  );
+  return $info;
+}
+
 /**
  * Implements hook_feeds_processor_targets().
  */
@@ -23,6 +48,7 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
   if (empty($fields_to_include)) {
     return $targets;
   }
+
   // Get bundles' fields:
   foreach ($fields_to_include as $para_field) {
     $host_field = field_info_field($para_field['field_name']);
@@ -33,12 +59,16 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
       'bundle' => $bundle,
       'entity_type' => $entity_type,
     );
+
     // Call hook_feeds_processor_targets on each field that support Feeds,
     // in order to display the field mapping settings.
     $sub_fields = feeds_para_mapper_get_target_fields($para_field_info, $with_path);
     foreach ($sub_fields as $sub_field) {
-      $module_targets = feeds_para_mapper_call_targets_form_hook($sub_field);
-      foreach ($module_targets as $name => $target) {
+      $paragraph_field_targets = feeds_para_mapper_call_targets_form_hook($sub_field);
+      foreach ($paragraph_field_targets as $name => $target) {
+        // Rename the machine name.
+        
+//dpm($target);
         $targetF = array_filter($sub_fields, function ($item) use ($name) {
           $containsKey = strpos($name, $item['machine_name']) !== FALSE;
           $sameKey = $item['machine_name'] === $name;
@@ -91,6 +121,7 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
       }
     }
   }
+  //dpm($targets['field_mmp_id']);
   return $targets;
 }
 
@@ -154,6 +185,7 @@ function feeds_para_mapper_get_target_fields(array $target, $with_path = FALSE, 
           'paragraph_bundle' => $sub_field['bundle'],
           'module' => $info['module'],
           'type' => $info['type'],
+          'bundle' => $target_bundle,
         );
         if (isset($target['host_field'])) {
           $field['host_field'] = $target['host_field'];
@@ -395,16 +427,19 @@ function feeds_para_mapper_call_targets_form_hook(array $field) {
     'paragraphs_item',
     $field['paragraph_bundle'],
   );
+  $machine_name = $field['machine_name'];
+  $field['machine_name'] = $field['paragraph_bundle'] . ':' . $machine_name;
   $field = feeds_para_mapper_get_correct_module_name($field);
   if (module_hook($field['module'], $hook)) {
     $targets = module_invoke($field['module'], $hook, $args[0], $args[1]);
   }
-  elseif (module_hook($field['module'], $alter_hook)) {
+  if (module_hook($field['module'], $alter_hook)) {
     $temp = &$targets;
     $function = $field['module'] . '_' . $alter_hook;
     $function($temp, $args[0], $args[1]);
     $targets = $temp;
   }
+
   return $targets;
 }
 
