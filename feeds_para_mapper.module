@@ -67,8 +67,6 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
       $paragraph_field_targets = feeds_para_mapper_call_targets_form_hook($sub_field);
       foreach ($paragraph_field_targets as $name => $target) {
         // Rename the machine name.
-        
-//dpm($target);
         $targetF = array_filter($sub_fields, function ($item) use ($name) {
           $containsKey = strpos($name, $item['machine_name']) !== FALSE;
           $sameKey = $item['machine_name'] === $name;
@@ -121,7 +119,6 @@ function feeds_para_mapper_feeds_processor_targets($entity_type, $bundle, $with_
       }
     }
   }
-  //dpm($targets['field_mmp_id']);
   return $targets;
 }
 
