@@ -129,7 +129,6 @@ class FeedsParagraphProcessor extends FeedsProcessor {
       $entity = entity_load($entity_type, $paragraph->host_entity_id);
       $paragraph->setHostEntity($entity_type, $entity);
 
-      dpm($paragraph);
       // Do we need validation here?
       if (isset($paragraph->id) && ($paragraph->parent == $paragraph->id || (is_array($paragraph->parent) 
             && in_array($paragraph->id, $paragraph->parent)))
